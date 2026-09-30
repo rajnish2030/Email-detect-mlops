@@ -15,8 +15,6 @@ mlruns/
 
 .DS_Store
 
-backend/models/*.pkl
-
 backend/results/
 
 *.tmp
