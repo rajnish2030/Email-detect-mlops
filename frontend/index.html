@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Email Spam Detection</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="min-h-screen bg-slate-950 text-white">
+
+    <div class="min-h-screen flex items-center justify-center px-4">
+
+        <div class="w-full max-w-2xl">
+
+            <div class="text-center mb-8">
+                <h1 class="text-4xl font-bold">
+                    Email Spam Detection
+                </h1>
+
+                <p class="text-slate-400 mt-3">
+                    AI-powered email classification using Machine Learning
+                </p>
+            </div>
+
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-2xl">
+
+                <label class="block text-sm font-medium text-slate-300 mb-3">
+                    Enter Email
+                </label>
+
+                <textarea
+                    id="email"
+                    rows="8"
+                    placeholder="Paste your email content here..."
+                    class="w-full rounded-xl bg-slate-950 border border-slate-700 p-4 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                ></textarea>
+
+                <button
+                    id="predictButton"
+                    onclick="predictEmail()"
+                    class="w-full mt-5 bg-blue-600 hover:bg-blue-700 transition rounded-xl py-3 font-semibold"
+                >
+                    Check Email
+                </button>
+
+                <div
+                    id="loading"
+                    class="hidden text-center mt-5 text-slate-400"
+                >
+                    Analyzing email...
+                </div>
+
+                <div
+                    id="result"
+                    class="hidden mt-6 rounded-xl p-5"
+                >
+
+                    <div class="flex justify-between items-center">
+
+                        <div>
+                            <p class="text-sm text-slate-400">
+                                Prediction
+                            </p>
+
+                            <h2
+                                id="prediction"
+                                class="text-2xl font-bold mt-1"
+                            ></h2>
+                        </div>
+
+                        <div class="text-right">
+
+                            <p class="text-sm text-slate-400">
+                                Confidence
+                            </p>
+
+                            <p
+                                id="confidence"
+                                class="text-2xl font-bold mt-1"
+                            ></p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div
+                    id="error"
+                    class="hidden mt-5 rounded-xl bg-red-950 border border-red-800 p-4 text-red-300"
+                ></div>
+
+            </div>
+
+            <p class="text-center text-slate-600 text-sm mt-6">
+                Powered by FastAPI + Scikit-learn + MLflow
+            </p>
+
+        </div>
+
+    </div>
+
+    <script>
+
+        async function predictEmail() {
+
+            const emailInput = document.getElementById("email");
+            const predictButton = document.getElementById("predictButton");
+            const loading = document.getElementById("loading");
+            const result = document.getElementById("result");
+            const error = document.getElementById("error");
+
+            const email = emailInput.value.trim();
+
+            result.classList.add("hidden");
+            error.classList.add("hidden");
+
+            if (!email) {
+
+                error.textContent = "Please enter an email.";
+                error.classList.remove("hidden");
+
+                return;
+            }
+
+            predictButton.disabled = true;
+            predictButton.classList.add("opacity-50");
+
+            loading.classList.remove("hidden");
+
+            try {
+
+                const response = await fetch(
+                    "http://127.0.0.1:8000/predict",
+                    {
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+
+                        body: JSON.stringify({
+                            email: email
+                        })
+                    }
+                );
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(
+                        data.detail || "Prediction failed"
+                    );
+                }
+
+                document.getElementById(
+                    "prediction"
+                ).textContent = data.prediction;
+
+                document.getElementById(
+                    "confidence"
+                ).textContent = `${data.confidence}%`;
+
+                result.classList.remove("hidden");
+
+            } catch (err) {
+
+                error.textContent = err.message;
+                error.classList.remove("hidden");
+
+            } finally {
+
+                loading.classList.add("hidden");
+
+                predictButton.disabled = false;
+                predictButton.classList.remove("opacity-50");
+            }
+        }
+
+    </script>
+
+</body>
+</html>
+

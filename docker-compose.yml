@@ -1,0 +1,17 @@
+services:
+
+  backend:
+    image: rajnishkumar18/email-spam-backend:latest
+    container_name: email-spam-api
+    ports:
+      - "8001:8001"
+    restart: unless-stopped
+
+  frontend:
+    image: rajnishkumar18/email-spam-frontend:latest
+    container_name: email-spam-frontend
+    ports:
+      - "5500:80"
+    depends_on:
+      - backend
+    restart: unless-stopped

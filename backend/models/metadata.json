@@ -1,0 +1,16 @@
+{
+    "best_model": "logistic_regression",
+    "model_path": "backend/models/spam_classifier.pkl",
+    "data_source": "s3://email-spam-mlops-2026/processed/2026-09-30/emails_clean.csv",
+    "dataset_rows": 5695,
+    "target": "spam",
+    "features": "TF-IDF",
+    "algorithms": [
+        "Naive Bayes",
+        "Logistic Regression"
+    ],
+    "classes": {
+        "0": "NOT SPAM",
+        "1": "SPAM"
+    }
+}
